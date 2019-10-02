@@ -169,6 +169,57 @@
                     </artifactItems>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.microsoft.azure</groupId>
+                <artifactId>azure-webapp-maven-plugin</artifactId>
+                <version>1.7.0</version>
+                <configuration>
+                    <schemaVersion>V2</schemaVersion>
+                    <!-- Note: you cannot have both windows and linux app services in the same resource group -->
+                    <resourceGroup>TraskSpringOne</resourceGroup>
+                    <appName>TraskPetClinic</appName>
+                    <pricingTier>P1v2</pricingTier>
+                    <region>West US</region>
+                    <runtime>
+                        <!-- options for os: linux, windows and docker -->
+                        <os>linux</os>
+                        <!--
+                          options for javaVersion and webContainer:
+                          see https://docs.microsoft.com/en-us/java/api/overview/azure/maven/azure-webapp-maven-plugin/readme?view=azure-java-stable#configuration-details
+                        -->
+                        <javaVersion>java11</javaVersion>
+                        <webContainer>java11</webContainer>
+                    </runtime>
+                    <deployment>
+                    <resources>
+                        <resource>
+                            <directory>${project.basedir}/target</directory>
+                            <includes>
+                                <include>*.jar</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>${project.build.directory}/dependency</directory>
+                            <includes>
+                                <include>applicationinsights-agent-*.jar</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>${project.basedir}</directory>
+                            <includes>
+                                <include>AI-Agent.xml</include>
+                            </includes>
+                          </resource>
+                        </resources>
+                    </deployment>
+                    <appSettings>
+                        <property>
+                            <name>JAVA_OPTS</name>
+                            <value>-javaagent:/home/site/wwwroot/applicationinsights-agent-${applicationinsights.version}.jar -Dserver.port=80</value>
+                        </property>
+                    </appSettings>
+                </configuration>
+            </plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
